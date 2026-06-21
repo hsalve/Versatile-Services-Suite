@@ -41,55 +41,59 @@ import EmployeePayslipPrint from "@/pages/employee/PayslipPrint";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ path, component: Component, role }: { path: string; component: any; role?: "admin" | "employee" }) {
-  return (
-    <Route path={path}>
-      {(params) => {
-        const { user } = useAuth();
-        if (!user) {
-          return <Redirect to="/login" />;
-        }
-        if (role && user.role !== role) {
-          return <Redirect to="/login" />;
-        }
-        return <Component params={params} />;
-      }}
-    </Route>
-  );
+// ─── Auth guard ───────────────────────────────────────────────────────────────
+function AuthGuard({
+  role,
+  children,
+}: {
+  role?: "admin" | "employee";
+  children: React.ReactNode;
+}) {
+  const { user } = useAuth();
+  if (!user) return <Redirect to="/login" />;
+  if (role && user.role !== role) return <Redirect to="/login" />;
+  return <>{children}</>;
 }
 
+// ─── Admin routes (rendered inside AdminLayout) ───────────────────────────────
 function AdminRoutes() {
   return (
-    <AdminLayout>
-      <Switch>
-        <ProtectedRoute path="/admin" component={AdminDashboard} role="admin" />
-        <ProtectedRoute path="/admin/employees" component={AdminEmployees} role="admin" />
-        <ProtectedRoute path="/admin/employees/:id" component={AdminEmployeeDetail} role="admin" />
-        <ProtectedRoute path="/admin/salary-structures" component={AdminSalaryStructures} role="admin" />
-        <ProtectedRoute path="/admin/payroll" component={AdminPayroll} role="admin" />
-        <ProtectedRoute path="/admin/payroll/:id" component={AdminPayrollDetail} role="admin" />
-        <ProtectedRoute path="/admin/payslips" component={AdminPayslips} role="admin" />
-        <ProtectedRoute path="/admin/inquiries" component={AdminInquiries} role="admin" />
-        <ProtectedRoute path="/admin/quotes" component={AdminQuotes} role="admin" />
-        <ProtectedRoute path="/admin/applications" component={AdminApplications} role="admin" />
-        <Route component={NotFound} />
-      </Switch>
-    </AdminLayout>
+    <AuthGuard role="admin">
+      <AdminLayout>
+        <Switch>
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/admin/employees" component={AdminEmployees} />
+          <Route path="/admin/employees/:id" component={AdminEmployeeDetail} />
+          <Route path="/admin/salary-structures" component={AdminSalaryStructures} />
+          <Route path="/admin/payroll" component={AdminPayroll} />
+          <Route path="/admin/payroll/:id" component={AdminPayrollDetail} />
+          <Route path="/admin/payslips" component={AdminPayslips} />
+          <Route path="/admin/inquiries" component={AdminInquiries} />
+          <Route path="/admin/quotes" component={AdminQuotes} />
+          <Route path="/admin/applications" component={AdminApplications} />
+          <Route component={NotFound} />
+        </Switch>
+      </AdminLayout>
+    </AuthGuard>
   );
 }
 
+// ─── Employee routes (rendered inside EmployeeLayout) ─────────────────────────
 function EmployeeRoutes() {
   return (
-    <EmployeeLayout>
-      <Switch>
-        <ProtectedRoute path="/employee" component={EmployeeProfile} role="employee" />
-        <ProtectedRoute path="/employee/payslips" component={EmployeePayslips} role="employee" />
-        <Route component={NotFound} />
-      </Switch>
-    </EmployeeLayout>
+    <AuthGuard role="employee">
+      <EmployeeLayout>
+        <Switch>
+          <Route path="/employee" component={EmployeeProfile} />
+          <Route path="/employee/payslips" component={EmployeePayslips} />
+          <Route component={NotFound} />
+        </Switch>
+      </EmployeeLayout>
+    </AuthGuard>
   );
 }
 
+// ─── Public routes ────────────────────────────────────────────────────────────
 function PublicRoutes() {
   return (
     <PublicLayout>
@@ -109,13 +113,33 @@ function PublicRoutes() {
   );
 }
 
-function Router() {
+// ─── Root router ──────────────────────────────────────────────────────────────
+// In Wouter v3, "/prefix/:rest*" won't match the bare "/prefix" (no trailing
+// slash / no rest segment).  We register BOTH the bare path and a sub-path
+// wildcard so the Switch always hits the right section.
+function AppRouter() {
   return (
     <Switch>
-      <Route path="/admin/*" component={AdminRoutes} />
-      <Route path="/employee/payslips/:id/print" component={EmployeePayslipPrint} />
-      <Route path="/employee/*" component={EmployeeRoutes} />
-      <Route path="/*" component={PublicRoutes} />
+      {/* Payslip print — auth-guarded, layout-free for clean printing */}
+      <Route path="/employee/payslips/:id/print">
+        {() => (
+          <AuthGuard>
+            <EmployeePayslipPrint />
+          </AuthGuard>
+        )}
+      </Route>
+
+      {/* Admin section: match /admin AND /admin/<anything> */}
+      <Route path="/admin" component={AdminRoutes} />
+      <Route path="/admin/:a" component={AdminRoutes} />
+      <Route path="/admin/:a/:b" component={AdminRoutes} />
+
+      {/* Employee section: match /employee AND /employee/<anything> */}
+      <Route path="/employee" component={EmployeeRoutes} />
+      <Route path="/employee/:a" component={EmployeeRoutes} />
+
+      {/* Public section — catch-all */}
+      <Route component={PublicRoutes} />
     </Switch>
   );
 }
@@ -126,7 +150,7 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
+            <AppRouter />
           </WouterRouter>
           <Toaster />
         </TooltipProvider>
