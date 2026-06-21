@@ -1,22 +1,39 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Versatile Services HR & Payroll Management API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: employees
+    description: Employee management
+  - name: salary
+    description: Salary structures
+  - name: payroll
+    description: Payroll processing
+  - name: payslips
+    description: Payslip management
+  - name: contacts
+    description: Contact form submissions
+  - name: quotes
+    description: Quote requests
+  - name: applications
+    description: Job applications
+  - name: dashboard
+    description: Dashboard analytics
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +41,1081 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Auth ───────────────────────────────────────────────────────────────
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+
+  # ─── Employees ──────────────────────────────────────────────────────────
+  /employees:
+    get:
+      operationId: listEmployees
+      tags: [employees]
+      summary: List all employees
+      parameters:
+        - name: department
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Employee"
+    post:
+      operationId: createEmployee
+      tags: [employees]
+      summary: Create a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+
+  /employees/{id}:
+    get:
+      operationId: getEmployee
+      tags: [employees]
+      summary: Get employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Employee
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateEmployee
+      tags: [employees]
+      summary: Update employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    delete:
+      operationId: deleteEmployee
+      tags: [employees]
+      summary: Delete employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /employees/{id}/payslips:
+    get:
+      operationId: getEmployeePayslips
+      tags: [employees]
+      summary: Get all payslips for an employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of payslips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payslip"
+
+  # ─── Salary Structures ───────────────────────────────────────────────────
+  /salary-structures:
+    get:
+      operationId: listSalaryStructures
+      tags: [salary]
+      summary: List all salary structures
+      responses:
+        "200":
+          description: List of salary structures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SalaryStructure"
+    post:
+      operationId: createSalaryStructure
+      tags: [salary]
+      summary: Create salary structure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SalaryStructureInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalaryStructure"
+
+  /salary-structures/{id}:
+    get:
+      operationId: getSalaryStructure
+      tags: [salary]
+      summary: Get salary structure by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Salary structure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalaryStructure"
+    patch:
+      operationId: updateSalaryStructure
+      tags: [salary]
+      summary: Update salary structure
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SalaryStructureUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalaryStructure"
+    delete:
+      operationId: deleteSalaryStructure
+      tags: [salary]
+      summary: Delete salary structure
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Payroll Runs ─────────────────────────────────────────────────────────
+  /payroll-runs:
+    get:
+      operationId: listPayrollRuns
+      tags: [payroll]
+      summary: List all payroll runs
+      responses:
+        "200":
+          description: List of payroll runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayrollRun"
+    post:
+      operationId: createPayrollRun
+      tags: [payroll]
+      summary: Create a new payroll run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollRunInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRun"
+
+  /payroll-runs/{id}:
+    get:
+      operationId: getPayrollRun
+      tags: [payroll]
+      summary: Get payroll run by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Payroll run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRun"
+
+  /payroll-runs/{id}/process:
+    post:
+      operationId: processPayrollRun
+      tags: [payroll]
+      summary: Process payroll run and generate payslips
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Payroll processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRun"
+
+  # ─── Payslips ─────────────────────────────────────────────────────────────
+  /payslips:
+    get:
+      operationId: listPayslips
+      tags: [payslips]
+      summary: List all payslips
+      parameters:
+        - name: payrollRunId
+          in: query
+          schema:
+            type: integer
+        - name: employeeId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of payslips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payslip"
+
+  /payslips/{id}:
+    get:
+      operationId: getPayslip
+      tags: [payslips]
+      summary: Get payslip by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Payslip
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payslip"
+
+  # ─── Contacts ─────────────────────────────────────────────────────────────
+  /contacts:
+    get:
+      operationId: listContacts
+      tags: [contacts]
+      summary: List contact submissions
+      responses:
+        "200":
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+    post:
+      operationId: createContact
+      tags: [contacts]
+      summary: Submit contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /contacts/{id}:
+    patch:
+      operationId: updateContact
+      tags: [contacts]
+      summary: Update contact status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  # ─── Quote Requests ───────────────────────────────────────────────────────
+  /quote-requests:
+    get:
+      operationId: listQuoteRequests
+      tags: [quotes]
+      summary: List all quote requests
+      responses:
+        "200":
+          description: List of quote requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuoteRequest"
+    post:
+      operationId: createQuoteRequest
+      tags: [quotes]
+      summary: Submit a quote request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteRequestInput"
+      responses:
+        "201":
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteRequest"
+
+  /quote-requests/{id}:
+    patch:
+      operationId: updateQuoteRequest
+      tags: [quotes]
+      summary: Update quote request status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteRequestUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteRequest"
+
+  # ─── Job Applications ─────────────────────────────────────────────────────
+  /job-applications:
+    get:
+      operationId: listJobApplications
+      tags: [applications]
+      summary: List all job applications
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of job applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JobApplication"
+    post:
+      operationId: createJobApplication
+      tags: [applications]
+      summary: Submit a job application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobApplicationInput"
+      responses:
+        "201":
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobApplication"
+
+  /job-applications/{id}:
+    get:
+      operationId: getJobApplication
+      tags: [applications]
+      summary: Get job application by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Job application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobApplication"
+    patch:
+      operationId: updateJobApplication
+      tags: [applications]
+      summary: Update job application status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobApplicationUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobApplication"
+
+  # ─── Dashboard / Analytics ────────────────────────────────────────────────
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get overview statistics for admin dashboard
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/payroll-summary:
+    get:
+      operationId: getPayrollSummary
+      tags: [dashboard]
+      summary: Get payroll summary by month
+      responses:
+        "200":
+          description: Monthly payroll summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayrollMonthSummary"
+
+  /dashboard/department-breakdown:
+    get:
+      operationId: getDepartmentBreakdown
+      tags: [dashboard]
+      summary: Get employee count by department
+      responses:
+        "200":
+          description: Department breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DepartmentCount"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    # ─── Auth ───────────────────────────────────────────────────────────────
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, role, name]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, employee]
+        employeeId:
+          type: ["integer", "null"]
+
+    # ─── Employee ────────────────────────────────────────────────────────────
+    Employee:
+      type: object
+      required: [id, employeeCode, firstName, lastName, email, department, designation, status, joinDate]
+      properties:
+        id:
+          type: integer
+        employeeCode:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        department:
+          type: string
+        designation:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, terminated]
+        joinDate:
+          type: string
+        salaryStructureId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    EmployeeInput:
+      type: object
+      required: [firstName, lastName, email, department, designation, joinDate]
+      properties:
+        employeeCode:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        department:
+          type: string
+        designation:
+          type: string
+        status:
+          type: string
+        joinDate:
+          type: string
+        salaryStructureId:
+          type: ["integer", "null"]
+
+    EmployeeUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        department:
+          type: string
+        designation:
+          type: string
+        status:
+          type: string
+        salaryStructureId:
+          type: ["integer", "null"]
+
+    # ─── Salary Structure ────────────────────────────────────────────────────
+    SalaryStructure:
+      type: object
+      required: [id, name, basicSalary, hra, da, ta, otherAllowances, pfDeduction, taxDeduction, otherDeductions]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        basicSalary:
+          type: number
+        hra:
+          type: number
+        da:
+          type: number
+        ta:
+          type: number
+        otherAllowances:
+          type: number
+        pfDeduction:
+          type: number
+        taxDeduction:
+          type: number
+        otherDeductions:
+          type: number
+        grossSalary:
+          type: number
+        netSalary:
+          type: number
+        createdAt:
+          type: string
+
+    SalaryStructureInput:
+      type: object
+      required: [name, basicSalary, hra, da, ta, otherAllowances, pfDeduction, taxDeduction, otherDeductions]
+      properties:
+        name:
+          type: string
+        basicSalary:
+          type: number
+        hra:
+          type: number
+        da:
+          type: number
+        ta:
+          type: number
+        otherAllowances:
+          type: number
+        pfDeduction:
+          type: number
+        taxDeduction:
+          type: number
+        otherDeductions:
+          type: number
+
+    SalaryStructureUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        basicSalary:
+          type: number
+        hra:
+          type: number
+        da:
+          type: number
+        ta:
+          type: number
+        otherAllowances:
+          type: number
+        pfDeduction:
+          type: number
+        taxDeduction:
+          type: number
+        otherDeductions:
+          type: number
+
+    # ─── Payroll Run ─────────────────────────────────────────────────────────
+    PayrollRun:
+      type: object
+      required: [id, month, year, status, createdAt]
+      properties:
+        id:
+          type: integer
+        month:
+          type: integer
+        year:
+          type: integer
+        status:
+          type: string
+          enum: [draft, processing, completed]
+        totalGross:
+          type: ["number", "null"]
+        totalNet:
+          type: ["number", "null"]
+        employeeCount:
+          type: ["integer", "null"]
+        processedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    PayrollRunInput:
+      type: object
+      required: [month, year]
+      properties:
+        month:
+          type: integer
+        year:
+          type: integer
+
+    # ─── Payslip ─────────────────────────────────────────────────────────────
+    Payslip:
+      type: object
+      required: [id, payrollRunId, employeeId, basicSalary, grossSalary, totalDeductions, netSalary]
+      properties:
+        id:
+          type: integer
+        payrollRunId:
+          type: integer
+        employeeId:
+          type: integer
+        employeeName:
+          type: ["string", "null"]
+        employeeCode:
+          type: ["string", "null"]
+        department:
+          type: ["string", "null"]
+        designation:
+          type: ["string", "null"]
+        month:
+          type: ["integer", "null"]
+        year:
+          type: ["integer", "null"]
+        basicSalary:
+          type: number
+        hra:
+          type: number
+        da:
+          type: number
+        ta:
+          type: number
+        otherAllowances:
+          type: number
+        grossSalary:
+          type: number
+        pfDeduction:
+          type: number
+        taxDeduction:
+          type: number
+        otherDeductions:
+          type: number
+        totalDeductions:
+          type: number
+        netSalary:
+          type: number
+        createdAt:
+          type: string
+
+    # ─── Contact ──────────────────────────────────────────────────────────────
+    Contact:
+      type: object
+      required: [id, name, email, message, status, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        subject:
+          type: ["string", "null"]
+        message:
+          type: string
+        status:
+          type: string
+          enum: [new, read, replied]
+        createdAt:
+          type: string
+
+    ContactInput:
+      type: object
+      required: [name, email, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+
+    ContactUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+
+    # ─── Quote Request ────────────────────────────────────────────────────────
+    QuoteRequest:
+      type: object
+      required: [id, companyName, contactName, email, service, status, createdAt]
+      properties:
+        id:
+          type: integer
+        companyName:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        service:
+          type: string
+        requirements:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [new, reviewing, quoted, closed]
+        createdAt:
+          type: string
+
+    QuoteRequestInput:
+      type: object
+      required: [companyName, contactName, email, service]
+      properties:
+        companyName:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        service:
+          type: string
+        requirements:
+          type: string
+
+    QuoteRequestUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+
+    # ─── Job Application ──────────────────────────────────────────────────────
+    JobApplication:
+      type: object
+      required: [id, applicantName, email, position, status, createdAt]
+      properties:
+        id:
+          type: integer
+        applicantName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        position:
+          type: string
+        department:
+          type: ["string", "null"]
+        experience:
+          type: ["string", "null"]
+        coverLetter:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [new, shortlisted, interviewed, offered, rejected]
+        createdAt:
+          type: string
+
+    JobApplicationInput:
+      type: object
+      required: [applicantName, email, position]
+      properties:
+        applicantName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        position:
+          type: string
+        department:
+          type: string
+        experience:
+          type: string
+        coverLetter:
+          type: string
+
+    JobApplicationUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+
+    # ─── Dashboard ────────────────────────────────────────────────────────────
+    DashboardStats:
+      type: object
+      required: [totalEmployees, activeEmployees, totalPayrollRuns, pendingContacts, pendingApplications, pendingQuotes, lastPayrollTotal]
+      properties:
+        totalEmployees:
+          type: integer
+        activeEmployees:
+          type: integer
+        totalPayrollRuns:
+          type: integer
+        pendingContacts:
+          type: integer
+        pendingApplications:
+          type: integer
+        pendingQuotes:
+          type: integer
+        lastPayrollTotal:
+          type: number
+
+    PayrollMonthSummary:
+      type: object
+      required: [month, year, totalNet, employeeCount]
+      properties:
+        month:
+          type: integer
+        year:
+          type: integer
+        totalNet:
+          type: number
+        employeeCount:
+          type: integer
+
+    DepartmentCount:
+      type: object
+      required: [department, count]
+      properties:
+        department:
+          type: string
+        count:
+          type: integer
