@@ -1,0 +1,1 @@
+- [Vite build env var guards](vite-build-env-vars.md) — PORT/BASE_PATH must use fallbacks not throw in vite.config.ts; deployment build omits these vars
