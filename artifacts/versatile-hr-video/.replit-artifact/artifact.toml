@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/versatile-hr-video/"
+title = "Versatile Services HR & Payroll — Promo Video"
+version = "1.0.0"
+id = "artifacts/versatile-hr-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/versatile-hr-video/" ]
+localPort = 19175
+
+[services.development]
+run = "pnpm --filter @workspace/versatile-hr-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/versatile-hr-video", "run", "build" ]
+publicDir = "artifacts/versatile-hr-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19175"
+BASE_PATH = "/versatile-hr-video/"

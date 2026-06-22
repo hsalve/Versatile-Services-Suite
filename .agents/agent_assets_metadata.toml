@@ -1,0 +1,19 @@
+uploads = []
+
+[[generated]]
+id = "dWtIyAKlBgNzXVFQWXu0L"
+uri = "file://artifacts/versatile-hr-video/public/images/dashboard_abstract.png"
+type = "image"
+title = "enterprise dashboard abstract"
+
+[[outputs]]
+id = "3hNbLbjqeAciyqF0B36QF"
+uri = "file://artifacts/versatile-hr-video/public/images/office_hr.jpg"
+type = "image"
+title = "modern professional office space hr worker laptop"
+
+[[outputs]]
+id = "qMZPc4UszTJA-CW62ohSO"
+uri = "file://artifacts/versatile-hr-video/public/images/facility_worker.jpg"
+type = "image"
+title = "facility management worker uniform warehouse professional"
