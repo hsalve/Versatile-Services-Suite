@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { SectionHeader } from "@/components/public/SectionHeader";
-import { AnimatedCounter } from "@/components/public/AnimatedCounter";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
 const stats = [
   { value: "30+", label: "Companies Served", icon: "🏭" },
