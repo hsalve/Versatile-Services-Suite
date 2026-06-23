@@ -12,16 +12,20 @@ export function VSLogo({ variant = "full", className = "", iconSize = 36, light 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
       <svg width={iconSize} height={iconSize} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="40" height="40" rx="8" fill="#1a3a6b" />
-        <path d="M8 10 L20 30 L32 10" stroke="#e8630a" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <path d="M14 10 L20 22 L26 10" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.7" />
+        <rect width="40" height="40" rx="9" fill="#1a3a6b" />
+        {/* V shape - outer */}
+        <path d="M7 10 L20 30 L33 10" stroke="#e8630a" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* V shape - inner highlight */}
+        <path d="M13 10 L20 23 L27 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.55" />
+        {/* Dot accent */}
+        <circle cx="20" cy="30" r="2.5" fill="#e8630a" />
       </svg>
       {variant === "full" && (
-        <div className="flex flex-col leading-none">
-          <span className="font-bold text-base tracking-tight" style={{ color: textColor }}>
+        <div className="flex flex-col leading-none gap-0.5">
+          <span className="font-bold text-[15px] tracking-[0.06em]" style={{ color: textColor }}>
             VERSATILE
           </span>
-          <span className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: subTextColor }}>
+          <span className="text-[10px] font-bold tracking-[0.22em] uppercase" style={{ color: subTextColor }}>
             SERVICES
           </span>
         </div>
