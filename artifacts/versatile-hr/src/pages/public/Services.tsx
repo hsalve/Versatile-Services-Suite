@@ -1,13 +1,13 @@
 import { Link, useParams } from "wouter";
 import { motion } from "framer-motion";
-import { SectionHeader } from "@/components/public/SectionHeader";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   HRIllustration,
   HousekeepingIllustration,
   TransportIllustration,
   GreenIllustration,
   FoodIllustration,
-} from "@/components/public/Illustrations";
+} from "@/components/ui/Illustrations";
 
 const services = [
   {

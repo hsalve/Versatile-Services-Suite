@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { SectionHeader } from "@/components/public/SectionHeader";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 const values = [
   {

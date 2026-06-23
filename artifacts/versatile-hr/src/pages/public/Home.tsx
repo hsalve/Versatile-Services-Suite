@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { AnimatedCounter } from "@/components/public/AnimatedCounter";
-import { SectionHeader } from "@/components/public/SectionHeader";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   HeroIllustration,
   HRIllustration,
@@ -10,7 +10,7 @@ import {
   TransportIllustration,
   GreenIllustration,
   FoodIllustration,
-} from "@/components/public/Illustrations";
+} from "@/components/ui/Illustrations";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
